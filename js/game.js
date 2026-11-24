@@ -734,11 +734,13 @@
       state.totalEarned += offline.amount;
     }
 
-    CG.Platform.init(function (mode) {
+    CG.Platform.init(function (source) {
       $('platformBadge').textContent =
-        mode === 'yandex'
+        source === 'yandex'
           ? '✅ Яндекс Игры: SDK подключён, rewarded-реклама активна'
-          : 'Демо-режим: локальный запуск. На Яндекс Играх включится SDK и настоящая реклама';
+          : source === 'adsgram'
+            ? '✅ Telegram: AdsGram rewarded-реклама активна'
+            : 'Демо-режим: локальный запуск. На Яндекс Играх включится SDK и настоящая реклама';
     });
 
     // Облачный прогресс — только если локального сохранения нет

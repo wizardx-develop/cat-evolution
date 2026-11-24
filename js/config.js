@@ -22,7 +22,10 @@ CG.CONFIG = {
   LAP: { BASE: 50, GROWTH: 1.6 },
   TREAT: { BASE: 800, GROWTH: 3.2 },
   CAT: { BASE: 20, GROWTH: 1.08 },
-  MERGE: { BASE: 15, GROWTH: 4 }
+  MERGE: { BASE: 15, GROWTH: 4 },
+
+  // ID блока rewarded-видео в AdsGram (adsgram.ai). Пусто → демо-режим.
+  ADSGRAM_BLOCK_ID: ''
 };
 
 /** Ступени эволюции: от лапки до Кото-короля. */

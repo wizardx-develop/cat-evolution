@@ -40,6 +40,65 @@ CG.Platform = (function () {
     } catch (e) {}
   }
 
+  /* ---------- AdsGram (rewarded-видео в Telegram) ---------- */
+  const ads = { configured: false, controller: null, loading: null };
+
+  function inTelegram() {
+    try {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      return !!(tg && typeof tg.initData === 'string' && tg.initData.length > 0);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadAdsgramSdk() {
+    if (window.Adsgram) return Promise.resolve(true);
+    if (ads.loading) return ads.loading;
+    ads.loading = new Promise(function (resolve) {
+      const s = document.createElement('script');
+      s.src = 'https://sad.adsgram.ai/js/sad.min.js';
+      s.async = true;
+      let settled = false;
+      const done = function (ok) {
+        if (!settled) {
+          settled = true;
+          resolve(ok);
+        }
+      };
+      s.onload = function () { done(true); };
+      s.onerror = function () { done(false); };
+      document.head.appendChild(s);
+      setTimeout(function () { done(false); }, 6000);
+    });
+    return ads.loading;
+  }
+
+  function ensureAdsgram() {
+    if (!ads.configured) return Promise.resolve(null);
+    if (ads.controller) return Promise.resolve(ads.controller);
+    return loadAdsgramSdk().then(function (ok) {
+      if (!ok) return null;
+      try {
+        const debug = /[?&]ad-debug/.test(window.location.search);
+        ads.controller = window.Adsgram.init({
+          blockId: C.ADSGRAM_BLOCK_ID,
+          debug: debug,
+          debugConsole: debug
+        });
+        return ads.controller;
+      } catch (e) {
+        return null;
+      }
+    });
+  }
+
+  function adSource() {
+    if (mode === 'yandex') return 'yandex';
+    if (ads.configured) return 'adsgram';
+    return 'demo';
+  }
+
   /* ---------- Инициализация SDK ---------- */
   function startSdk(cb) {
     window.YaGames.init()
@@ -140,9 +199,10 @@ CG.Platform = (function () {
 
   function init(onReady) {
     initTelegram();
+    ads.configured = !!C.ADSGRAM_BLOCK_ID && inTelegram();
     const finish = function () {
       maybeSignalReady();
-      onReady(mode);
+      onReady(adSource());
     };
 
     if (window.YaGames && typeof window.YaGames.init === 'function') {
@@ -193,13 +253,37 @@ CG.Platform = (function () {
       return;
     }
 
+    // Telegram + AdsGram: показываем настоящий rewarded, иначе демо-оверлей.
     adBusy = true;
-    MockAd.show(C.AD_SECONDS, {
-      onOpen: handlers.onOpen,
-      onRewarded: handlers.onRewarded,
-      onClose: function () {
+    ensureAdsgram().then(function (ctrl) {
+      if (!ctrl) {
+        MockAd.show(C.AD_SECONDS, {
+          onOpen: handlers.onOpen,
+          onRewarded: handlers.onRewarded,
+          onClose: function () {
+            adBusy = false;
+            if (handlers.onClose) handlers.onClose(true);
+          }
+        });
+        return;
+      }
+      if (handlers.onOpen) handlers.onOpen();
+      try {
+        ctrl
+          .show()
+          .then(function () {
+            // Ролик досмотрен до конца — выдаём награду.
+            adBusy = false;
+            if (handlers.onRewarded) handlers.onRewarded();
+            if (handlers.onClose) handlers.onClose(true);
+          })
+          .catch(function (result) {
+            adBusy = false;
+            if (handlers.onError) handlers.onError(result);
+          });
+      } catch (err) {
         adBusy = false;
-        if (handlers.onClose) handlers.onClose(true);
+        if (handlers.onError) handlers.onError(err);
       }
     });
   }
@@ -264,6 +348,7 @@ CG.Platform = (function () {
     gameplayStop: gameplayStop,
     mode: function () {
       return mode;
-    }
+    },
+    adSource: adSource
   };
 })();
