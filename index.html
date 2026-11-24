@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0b0d1a">
+  <title>Кото-Эволюция — idle-мерж кликер</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Yandex Games SDK: относительный путь для архива в Консоли разработчика.
+       Локально файл не найдется — включится демо-режим. -->
+  <script async src="/sdk.js" onload="window.__sdkLoaded=1" onerror="window.__sdkFailed=1"></script>
+  <!-- Telegram Mini Apps: подключается только внутри Telegram, иначе просто игнорируется. -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <header class="hud">
+    <div class="hud__brand">🐱 Кото-Эволюция</div>
+    <div class="hud__stats">
+      <div class="stat"><span>Монеты</span><strong id="coins">0</strong></div>
+      <div class="stat"><span>Доход</span><strong id="income">0/сек</strong></div>
+      <div class="stat"><span>Клик</span><strong id="clickPower">1</strong></div>
+      <div class="stat stat--buff hidden" id="buffBadge"><span>Буст</span><strong>⚡ ×2 <i id="buffTime"></i></strong></div>
+    </div>
+    <button type="button" class="icon-btn" id="muteBtn" aria-label="Включить или выключить звук">🔊</button>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <h2>Коллекция видов</h2>
+      <div id="collection" class="collection"></div>
+
+      <h2>Награды за рекламу</h2>
+      <button type="button" class="ad-btn" id="adBuff">
+        🎬 <span>×2 доход на 5 минут<small>Смотри ролик — получай двойной пассив</small></span>
+      </button>
+      <button type="button" class="ad-btn" id="adGift">
+        🎬 <span>Моментальный подарок<small>Монеты сразу после просмотра</small></span>
+      </button>
+      <p class="note">Реклама добровольная: смотри, когда выгодно. Награда выдаётся только за полностью просмотренный ролик.</p>
+
+      <button type="button" class="btn btn--danger" id="resetBtn">Сбросить прогресс</button>
+    </aside>
+
+    <section class="panel panel--game">
+      <div class="game-wrap">
+        <canvas id="game" aria-label="Игровое поле: кликер и сетка мержа"></canvas>
+      </div>
+      <div class="game-actions">
+        <button type="button" class="btn btn--primary" id="buyCat">🐱 Нанять котёнка · <span id="buyCatCost">20</span></button>
+        <p class="hint" id="boardHint"></p>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>Генераторы дохода</h2>
+      <ul id="genList" class="shop-list"></ul>
+      <h2>Улучшения</h2>
+      <ul id="upList" class="shop-list"></ul>
+    </aside>
+  </main>
+
+  <footer class="foot"><span id="platformBadge">Загрузка…</span></footer>
+
+  <div id="toasts" class="toasts"></div>
+
+  <div id="offlineModal" class="overlay hidden">
+    <div class="modal">
+      <div class="modal__icon">💤</div>
+      <h3>С возвращением!</h3>
+      <p>Пока вас не было, котики заработали <strong id="offlineAmount">0</strong> монет<br><small id="offlineSub"></small></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" id="offlineOk">Забрать</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resetModal" class="overlay hidden">
+    <div class="modal">
+      <div class="modal__icon">🗑️</div>
+      <h3>Сбросить прогресс?</h3>
+      <p>Монеты, котики и все улучшения будут потеряны безвозвратно.</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="resetCancel">Отмена</button>
+        <button type="button" class="btn btn--danger" id="resetOk">Сбросить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/platform.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

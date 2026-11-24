@@ -1,0 +1,546 @@
+:root {
+  --bg: #0b0d1a;
+  --panel: rgba(255, 255, 255, 0.045);
+  --panel-2: rgba(255, 255, 255, 0.07);
+  --line: rgba(255, 255, 255, 0.09);
+  --text: #e9eaf5;
+  --muted: #9aa0c0;
+  --gold: #ffd76e;
+  --orange: #ff9f43;
+  --green: #7bed9f;
+  --red: #ff6b81;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(162, 155, 254, 0.28), transparent 60%),
+    radial-gradient(800px 480px at 92% -4%, rgba(255, 159, 67, 0.18), transparent 55%),
+    radial-gradient(760px 700px at 50% 116%, rgba(123, 237, 159, 0.12), transparent 62%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+h2 {
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 16px 0 8px;
+}
+
+h2:first-child {
+  margin-top: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------- Шапка ---------- */
+
+.hud {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: rgba(11, 13, 26, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.hud__brand {
+  font-weight: 800;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.hud__stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px 12px;
+  min-width: 104px;
+}
+
+.stat span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat strong {
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat--buff {
+  border-color: rgba(255, 215, 110, 0.5);
+  background: rgba(255, 215, 110, 0.12);
+  animation: buffPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes buffPulse {
+  50% {
+    box-shadow: 0 0 14px rgba(255, 215, 110, 0.35);
+  }
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 18px;
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+/* ---------- Раскладка ---------- */
+
+.layout {
+  display: grid;
+  gap: 14px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 14px;
+  grid-template-columns: minmax(230px, 0.85fr) minmax(320px, 1.3fr) minmax(250px, 1fr);
+  align-items: start;
+}
+
+@media (max-width: 1040px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+  }
+  .panel--game {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .panel--game {
+    order: -1;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- Игровое поле ---------- */
+
+canvas#game {
+  width: 100%;
+  display: block;
+  touch-action: none;
+  border-radius: 14px;
+}
+
+.game-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ---------- Кнопки ---------- */
+
+.btn {
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 700;
+  transition: transform 0.08s, filter 0.15s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  cursor: default;
+}
+
+.btn--primary {
+  background: linear-gradient(180deg, #ffe6a1, #ffb64d);
+  color: #251804;
+  box-shadow: 0 6px 18px rgba(255, 182, 77, 0.25);
+}
+
+.btn--ghost {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+
+.btn--danger {
+  background: rgba(255, 107, 129, 0.14);
+  border: 1px solid rgba(255, 107, 129, 0.45);
+  color: #ffb3bd;
+  width: 100%;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+
+/* ---------- Рекламные кнопки ---------- */
+
+.ad-btn {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(162, 155, 254, 0.22), rgba(255, 159, 67, 0.16));
+  border: 1px dashed rgba(162, 155, 254, 0.55);
+  font-weight: 700;
+  margin-bottom: 8px;
+  transition: transform 0.08s;
+}
+
+.ad-btn small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.ad-btn:active {
+  transform: scale(0.97);
+}
+
+.ad-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- Коллекция ---------- */
+
+.collection {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.coll {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.coll--off {
+  filter: grayscale(1);
+  opacity: 0.32;
+}
+
+.coll i {
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  font-style: normal;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* ---------- Магазин ---------- */
+
+.shop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shop-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.shop-item__icon {
+  font-size: 22px;
+}
+
+.shop-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.shop-item__name {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-item__name em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.shop-item__desc {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.shop-item__buy {
+  min-width: 76px;
+  padding: 9px 8px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13px;
+  background: linear-gradient(180deg, #ffe6a1, #ffb64d);
+  color: #251804;
+}
+
+.shop-item--up .shop-item__buy {
+  background: linear-gradient(180deg, #c8f7d5, #7bed9f);
+  color: #07230f;
+}
+
+.shop-item__buy:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.7);
+  cursor: default;
+}
+
+/* ---------- Тосты ---------- */
+
+.toasts {
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+  width: min(92vw, 460px);
+}
+
+.toast {
+  background: #161a30;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  animation: toastIn 0.25s ease;
+  max-width: 100%;
+  text-align: center;
+}
+
+.toast--gold {
+  border-color: rgba(255, 215, 110, 0.5);
+  background: rgba(58, 46, 16, 0.96);
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ---------- Оверлеи ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 6, 15, 0.88);
+  backdrop-filter: blur(6px);
+  padding: 16px;
+}
+
+.modal {
+  background: #12152a;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.modal h3 {
+  margin: 8px 0 6px;
+}
+
+.modal p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.modal__icon {
+  font-size: 44px;
+}
+
+.modal__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal .btn--danger {
+  width: auto;
+  margin-top: 0;
+}
+
+/* ---------- Демо-реклама ---------- */
+
+.ad-screen {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(160deg, #1b1f3d, #241436);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ad-screen__label {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.ad-screen__emoji {
+  font-size: 64px;
+  animation: adSpin 2s ease-in-out infinite;
+}
+
+@keyframes adSpin {
+  50% {
+    transform: scale(1.12) rotate(-6deg);
+  }
+}
+
+.ad-progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+.ad-progress__bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  border-radius: 99px;
+  transition: width 1s linear;
+}
+
+.ad-caption {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.ad-caption strong {
+  color: var(--text);
+}
+
+/* ---------- Подвал ---------- */
+
+.foot {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 14px 22px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
