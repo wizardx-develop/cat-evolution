@@ -1,0 +1,13 @@
+{
+  "name": "cat-evolution-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram bot for Cat Evolution mini app: /start -> link to the game",
+  "main": "api/webhook.js",
+  "scripts": {
+    "poll": "node polling.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
